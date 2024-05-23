@@ -1,0 +1,17 @@
+[package]
+name = "demand-easy-sv2"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+stratum-common = { version="1.0.0" }
+roles_logic_sv2 = { version="1.0.0"}
+const_sv2 = { version="1.0.0"}
+binary_sv2 = { version = "1.0.0"}
+demand-sv2-connection = {version="0.0.1", git = "https://github.com/demand-open-source/demand-sv2-connection" }
+codec_sv2 = { version = "1.0.1", features = ["noise_sv2","with_buffer_pool"]}
+tokio = {version="1.36.0",features = ["full","tracing"]}
+key-utils = { version="1.0.0"}
+
+[features]
+with_serde = ["binary_sv2/with_serde", "roles_logic_sv2/with_serde", "codec_sv2/with_serde"]
