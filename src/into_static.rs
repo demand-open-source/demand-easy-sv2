@@ -6,8 +6,8 @@ use roles_logic_sv2::parsers::{
         IdentifyTransactionsSuccess, ProvideMissingTransactions, ProvideMissingTransactionsSuccess,
         SubmitSolution,
     },
-    TemplateDistribution::{self, CoinbaseOutputDataSize},
     PoolMessages,
+    TemplateDistribution::{self, CoinbaseOutputDataSize},
 };
 
 pub fn into_static(m: PoolMessages<'_>) -> PoolMessages<'static> {

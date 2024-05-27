@@ -426,4 +426,3 @@ pub fn into_static(m: AnyMessage<'_>) -> AnyMessage<'static> {
         },
     }
 }
-
