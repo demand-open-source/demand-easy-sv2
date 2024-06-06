@@ -297,7 +297,7 @@ dependencies = [
 
 [[package]]
 name = "demand-easy-sv2"
-version = "0.3.0"
+version = "0.4.0"
 dependencies = [
  "binary_sv2",
  "codec_sv2",
