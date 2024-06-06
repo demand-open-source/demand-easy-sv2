@@ -143,6 +143,7 @@ pub enum ClientBuilderError {
     ImpossibleToCompleteHandShakeWithUpstream,
     TryToAddProtocolAfterAddingSetupConnection,
     TryToAddSetupConnectionAfterAddingProtocol,
+    CanNotHaveMoreThan1Server,
 }
 
 // TODO a way for the caller to add a channel where it can receive the SetupConnection.Success or
@@ -160,28 +161,45 @@ impl ClientBuilder {
             protocol: None,
         }
     }
+    pub fn try_with_server(
+        &mut self,
+        from_server: Receiver<Frame_>,
+        to_server: Sender<Frame_>,
+    ) -> Result<&mut Self, ClientBuilderError> {
+        if self.from_server.is_none() && self.to_server.is_none() {
+            self.from_server = Some(from_server);
+            self.to_server = Some(to_server);
+            Ok(self)
+        } else {
+            Err(ClientBuilderError::CanNotHaveMoreThan1Server)
+        }
+    }
     pub async fn try_add_server(
         &mut self,
         stream: TcpStream,
     ) -> Result<&mut Self, ClientBuilderError> {
-        let initiator = match self.server_auth_key {
-            Some(key) => Initiator::from_raw_k(key.into_bytes())
-                .expect("Pub key is already checked for validity"),
-            None => Initiator::without_pk().expect("This fn call can not fail"),
-        };
+        if self.from_server.is_none() && self.to_server.is_none() {
+            let initiator = match self.server_auth_key {
+                Some(key) => Initiator::from_raw_k(key.into_bytes())
+                    .expect("Pub key is already checked for validity"),
+                None => Initiator::without_pk().expect("This fn call can not fail"),
+            };
 
-        if let Ok((receiver_from_client, send_to_client, _, _)) =
-            Connection::new::<'static, PoolMessages<'static>>(
-                stream,
-                HandshakeRole::Initiator(initiator),
-            )
-            .await
-        {
-            self.from_server = Some(receiver_from_client);
-            self.to_server = Some(send_to_client);
-            Ok(self)
+            if let Ok((receiver_from_client, send_to_client, _, _)) =
+                Connection::new::<'static, PoolMessages<'static>>(
+                    stream,
+                    HandshakeRole::Initiator(initiator),
+                )
+                .await
+            {
+                self.from_server = Some(receiver_from_client);
+                self.to_server = Some(send_to_client);
+                Ok(self)
+            } else {
+                Err(ClientBuilderError::ImpossibleToCompleteHandShakeWithUpstream)
+            }
         } else {
-            Err(ClientBuilderError::ImpossibleToCompleteHandShakeWithUpstream)
+            Err(ClientBuilderError::CanNotHaveMoreThan1Server)
         }
     }
     pub fn with_protocol(&mut self, protocol: Protocol) -> Result<&mut Self, ClientBuilderError> {

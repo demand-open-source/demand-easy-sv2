@@ -55,16 +55,18 @@ impl MessageChannel {
                     let mt = header.msg_type();
                     let mut payload = frame.payload().to_vec();
                     let mut payload2 = payload.clone();
-                    // TODO TODO TODO we need todo this orrible thing cause 
+                    // TODO TODO TODO we need todo this orrible thing cause
                     // that https://github.com/stratum-mining/stratum/issues/936
                     // as soon as fixed remove it
                     let maybe_message: Result<PoolMessages<'_>, _> =
                         (mt, payload.as_mut_slice()).try_into();
                     let maybe_message2: Result<TemplateDistribution<'_>, _> =
                         (mt, payload2.as_mut_slice()).try_into();
-                    match (maybe_message,maybe_message2) {
-                        (Ok(message),_) => (mt, into_static(message)),
-                        (_,Ok(message)) => (mt, into_static(PoolMessages::TemplateDistribution(message))),
+                    match (maybe_message, maybe_message2) {
+                        (Ok(message), _) => (mt, into_static(message)),
+                        (_, Ok(message)) => {
+                            (mt, into_static(PoolMessages::TemplateDistribution(message)))
+                        }
                         _ => {
                             eprintln!("Received frame with invalid payload or message type: {frame:?}, from: {expect_from}");
                             std::process::exit(1);

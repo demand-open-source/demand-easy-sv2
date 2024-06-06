@@ -107,6 +107,8 @@ pub enum ProxyBuilderError {
     ImpossibleToCompleteHandShakeWithDownstream,
     ImpossibleToCompleteHandShakeWithUpstream,
     IncompleteBuilder,
+    CanNotHaveMoreThan1Client,
+    CanNotHaveMoreThan1Server,
 }
 
 impl ProxyBuilder {
@@ -129,55 +131,93 @@ impl ProxyBuilder {
             handlers: vec![],
         }
     }
+
+    pub fn try_with_client(
+        &mut self,
+        from_client: Receiver<Frame_>,
+        to_client: Sender<Frame_>,
+    ) -> Result<&mut Self, ProxyBuilderError> {
+        if self.from_client.is_none() && self.to_client.is_none() {
+            self.from_client = Some(from_client);
+            self.to_client = Some(to_client);
+            Ok(self)
+        } else {
+            Err(ProxyBuilderError::CanNotHaveMoreThan1Client)
+        }
+    }
+
     pub async fn try_add_client(
         &mut self,
         stream: TcpStream,
     ) -> Result<&mut Self, ProxyBuilderError> {
-        let auth_pub_k_as_bytes = self.proxy_pub_key.into_bytes();
-        let auth_prv_k_as_bytes = self.proxy_sec_key.into_bytes();
-        let responder = Responder::from_authority_kp(
-            &auth_pub_k_as_bytes,
-            &auth_prv_k_as_bytes,
-            std::time::Duration::from_secs(self.cert_validity),
-        )
-        .expect("invalid key pair");
-
-        if let Ok((receiver_from_client, send_to_client, _, _)) =
-            Connection::new::<'static, PoolMessages<'static>>(
-                stream,
-                HandshakeRole::Responder(responder),
+        if self.from_client.is_none() && self.to_client.is_none() {
+            let auth_pub_k_as_bytes = self.proxy_pub_key.into_bytes();
+            let auth_prv_k_as_bytes = self.proxy_sec_key.into_bytes();
+            let responder = Responder::from_authority_kp(
+                &auth_pub_k_as_bytes,
+                &auth_prv_k_as_bytes,
+                std::time::Duration::from_secs(self.cert_validity),
             )
-            .await
-        {
-            self.from_client = Some(receiver_from_client);
-            self.to_client = Some(send_to_client);
-            Ok(self)
+            .expect("invalid key pair");
+
+            if let Ok((receiver_from_client, send_to_client, _, _)) =
+                Connection::new::<'static, PoolMessages<'static>>(
+                    stream,
+                    HandshakeRole::Responder(responder),
+                )
+                .await
+            {
+                self.from_client = Some(receiver_from_client);
+                self.to_client = Some(send_to_client);
+                Ok(self)
+            } else {
+                Err(ProxyBuilderError::ImpossibleToCompleteHandShakeWithDownstream)
+            }
         } else {
-            Err(ProxyBuilderError::ImpossibleToCompleteHandShakeWithDownstream)
+            Err(ProxyBuilderError::CanNotHaveMoreThan1Client)
         }
     }
+
+    pub fn try_with_server(
+        &mut self,
+        from_server: Receiver<Frame_>,
+        to_server: Sender<Frame_>,
+    ) -> Result<&mut Self, ProxyBuilderError> {
+        if self.from_server.is_none() && self.to_server.is_none() {
+            self.from_server = Some(from_server);
+            self.to_server = Some(to_server);
+            Ok(self)
+        } else {
+            Err(ProxyBuilderError::CanNotHaveMoreThan1Server)
+        }
+    }
+
     pub async fn try_add_server(
         &mut self,
         stream: TcpStream,
     ) -> Result<&mut Self, ProxyBuilderError> {
-        let initiator = match self.server_auth_key {
-            Some(key) => Initiator::from_raw_k(key.into_bytes())
-                .expect("Pub key is already checked for validity"),
-            None => Initiator::without_pk().expect("This fn call can not fail"),
-        };
+        if self.from_server.is_none() && self.to_server.is_none() {
+            let initiator = match self.server_auth_key {
+                Some(key) => Initiator::from_raw_k(key.into_bytes())
+                    .expect("Pub key is already checked for validity"),
+                None => Initiator::without_pk().expect("This fn call can not fail"),
+            };
 
-        if let Ok((receiver_from_client, send_to_client, _, _)) =
-            Connection::new::<'static, PoolMessages<'static>>(
-                stream,
-                HandshakeRole::Initiator(initiator),
-            )
-            .await
-        {
-            self.from_server = Some(receiver_from_client);
-            self.to_server = Some(send_to_client);
-            Ok(self)
+            if let Ok((receiver_from_client, send_to_client, _, _)) =
+                Connection::new::<'static, PoolMessages<'static>>(
+                    stream,
+                    HandshakeRole::Initiator(initiator),
+                )
+                .await
+            {
+                self.from_server = Some(receiver_from_client);
+                self.to_server = Some(send_to_client);
+                Ok(self)
+            } else {
+                Err(ProxyBuilderError::ImpossibleToCompleteHandShakeWithUpstream)
+            }
         } else {
-            Err(ProxyBuilderError::ImpossibleToCompleteHandShakeWithUpstream)
+            Err(ProxyBuilderError::CanNotHaveMoreThan1Server)
         }
     }
     pub fn override_cert_validity(&mut self, cert_validity: u64) -> &mut Self {
