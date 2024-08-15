@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 tokio = {version="1.36.0",features = ["full","tracing"]}
 stratum-common = { version="1.0.0" }
-roles_logic_sv2 = { version="1.1.0"}
+roles_logic_sv2 = { version="=1.1.0"}
 const_sv2 = { version="1.0.0"}
 binary_sv2 = { version = "1.0.0"}
 demand-sv2-connection = {version="0.0.2", git = "https://github.com/demand-open-source/demand-sv2-connection" }
