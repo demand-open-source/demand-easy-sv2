@@ -1,5 +1,5 @@
 use crate::into_static;
-use codec_sv2::{framing_sv2::framing2::EitherFrame, Frame};
+use codec_sv2::framing_sv2::framing::Frame as EitherFrame;
 pub use roles_logic_sv2;
 pub use roles_logic_sv2::parsers::PoolMessages;
 use roles_logic_sv2::parsers::TemplateDistribution;
