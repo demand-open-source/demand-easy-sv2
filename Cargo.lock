@@ -315,7 +315,7 @@ dependencies = [
 
 [[package]]
 name = "demand-easy-sv2"
-version = "0.5.0"
+version = "0.6.0"
 dependencies = [
  "binary_sv2",
  "codec_sv2",
@@ -329,9 +329,9 @@ dependencies = [
 
 [[package]]
 name = "demand-sv2-connection"
-version = "0.0.3"
+version = "0.0.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fc6d83735a7cd9305fe6e3e37eece0c95586e1d019da4bd6dbc65130649e7fc2"
+checksum = "c898374ca88b7d98fccd71418e1272e7a088f39b8e52a0cf52c193d457a1e9cf"
 dependencies = [
  "binary_sv2",
  "codec_sv2",

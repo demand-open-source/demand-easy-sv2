@@ -1,6 +1,6 @@
 [package]
 name = "demand-easy-sv2"
-version = "0.5.0"
+version = "0.6.0"
 edition = "2021"
 description = "abc"
 license = "MIT OR Apache-2.0"
@@ -12,7 +12,7 @@ stratum-common = { version="1.0.0" }
 roles_logic_sv2 = { version="1.1.0"}
 const_sv2 = { version="2.0.0"}
 binary_sv2 = { version = "1.0.1"}
-demand-sv2-connection = "0.0.3"
+demand-sv2-connection = "0.0.4"
 codec_sv2 = { version = "1.2.1", features = ["noise_sv2","with_buffer_pool"]}
 key-utils = { version="1.1.0"}
 #stratum-common = { version="1.0.0" , path = "../stratum/common"}
