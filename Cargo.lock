@@ -90,9 +90,9 @@ dependencies = [
 
 [[package]]
 name = "binary_sv2"
-version = "1.0.1"
+version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "33994d6fb8219379cec831f12464a8f814943ad029b9d75fabf0a55c06a37aa8"
+checksum = "2bf97d3b10067e2bb0dbf95e047eafdcfb16130ed830b958be3b506c6a3dffe9"
 dependencies = [
  "binary_codec_sv2",
  "derive_codec_sv2",
@@ -330,7 +330,8 @@ dependencies = [
 [[package]]
 name = "demand-sv2-connection"
 version = "0.0.3"
-source = "git+https://github.com/demand-open-source/demand-sv2-connection#c9ea6a46831b90699043a6476da7c9af0f29dd6a"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc6d83735a7cd9305fe6e3e37eece0c95586e1d019da4bd6dbc65130649e7fc2"
 dependencies = [
  "binary_sv2",
  "codec_sv2",

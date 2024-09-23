@@ -9,7 +9,7 @@ stratum-common = { version="1.0.0" }
 roles_logic_sv2 = { version="1.1.0"}
 const_sv2 = { version="2.0.0"}
 binary_sv2 = { version = "1.0.1"}
-demand-sv2-connection = {version="0.0.3", git = "https://github.com/demand-open-source/demand-sv2-connection" }
+demand-sv2-connection = "0.0.3"
 codec_sv2 = { version = "1.2.1", features = ["noise_sv2","with_buffer_pool"]}
 key-utils = { version="1.1.0"}
 #stratum-common = { version="1.0.0" , path = "../stratum/common"}
