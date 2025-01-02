@@ -101,6 +101,12 @@ pub enum ServerBuilderError {
     TryToAddSetupConnectionAfterAddingProtocol,
     CanNotHaveMoreThan1Client,
 }
+impl Default for ServerBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ServerBuilder {
     pub fn new() -> Self {
         Self {

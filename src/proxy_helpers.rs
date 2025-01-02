@@ -111,6 +111,12 @@ pub enum ProxyBuilderError {
     CanNotHaveMoreThan1Server,
 }
 
+impl Default for ProxyBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ProxyBuilder {
     pub fn new() -> Self {
         Self {

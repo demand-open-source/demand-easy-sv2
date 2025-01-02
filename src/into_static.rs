@@ -2,9 +2,8 @@ use roles_logic_sv2::parsers::{
     CommonMessages,
     JobDeclaration::{
         AllocateMiningJobToken, AllocateMiningJobTokenSuccess, DeclareMiningJob,
-        DeclareMiningJobError, DeclareMiningJobSuccess, IdentifyTransactions,
-        IdentifyTransactionsSuccess, ProvideMissingTransactions, ProvideMissingTransactionsSuccess,
-        SubmitSolution,
+        DeclareMiningJobError, DeclareMiningJobSuccess, ProvideMissingTransactions,
+        ProvideMissingTransactionsSuccess, SubmitSolution,
     },
     PoolMessages,
     TemplateDistribution::{self, CoinbaseOutputDataSize},
@@ -40,12 +39,6 @@ pub fn into_static(m: PoolMessages<'_>) -> PoolMessages<'static> {
             }
             DeclareMiningJobSuccess(m) => {
                 PoolMessages::JobDeclaration(DeclareMiningJobSuccess(m.into_static()))
-            }
-            IdentifyTransactions(m) => {
-                PoolMessages::JobDeclaration(IdentifyTransactions(m.into_static()))
-            }
-            IdentifyTransactionsSuccess(m) => {
-                PoolMessages::JobDeclaration(IdentifyTransactionsSuccess(m.into_static()))
             }
             ProvideMissingTransactions(m) => {
                 PoolMessages::JobDeclaration(ProvideMissingTransactions(m.into_static()))

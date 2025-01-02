@@ -82,14 +82,12 @@ impl Client {
             .expect("A message can always be converted in a frame");
         if send.send(frame.into()).await.is_err() {
             Err(ClientError::UpstreamClosedDuringSetupSv2Connection)
+        } else if (recv.recv().await).is_some() {
+            // TODO handle setup connection error here
+            println!("Connection setup with upstream");
+            Ok(())
         } else {
-            if let Some(_) = recv.recv().await {
-                // TODO handle setup connection error here
-                println!("Connection setup with upstream");
-                Ok(())
-            } else {
-                Err(ClientError::ImpossibleSetupSv2ConnectionWithUpstream)
-            }
+            Err(ClientError::ImpossibleSetupSv2ConnectionWithUpstream)
         }
     }
 
@@ -149,6 +147,12 @@ pub enum ClientBuilderError {
 // TODO a way for the caller to add a channel where it can receive the SetupConnection.Success or
 // Error message.
 // Something like with_custom_setup_connection_handler() ?
+impl Default for ClientBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ClientBuilder {
     pub fn new() -> Self {
         Self {
